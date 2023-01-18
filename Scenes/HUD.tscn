@@ -1,0 +1,19 @@
+[gd_scene format=2]
+
+[node name="HUD" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer"]
+margin_left = 927.0
+margin_top = 562.0
+margin_right = 1024.0
+margin_bottom = 599.0
+text = "PHASE: MOVE"
+
+[node name="endTurn" type="Button" parent="CanvasLayer"]
+margin_left = 803.0
+margin_top = 557.0
+margin_right = 902.0
+margin_bottom = 590.0
+text = "END TURN"
