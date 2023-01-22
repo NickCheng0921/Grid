@@ -5,6 +5,7 @@ enum Phases{
 	CMBT, CMBT_RSLTN
 }
 
+var pColors
 var active = false #this piece is selected, starts false
 var walked = false
 var attacked = false
@@ -66,13 +67,13 @@ func select():
 			Board.currPieceLoc = Vector2(x, y)
 			Board.movement = Board.maxMove
 			Board.walking = true
-			$Background.self_modulate = Color(0, 1, 0)
+			$Background.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
 		elif piece && Board.phase == Phases.CMBT:
 			Board.clearMove(piece)
 			Board.currPiece = piece
 			Board.currPieceLoc = Vector2(x, y)
 			Board.attacking = true
-			$Background.self_modulate = Color(0, 1, 0)
+			$Background.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
 		else:
 			$Background.self_modulate = Color(1, 1, 1)
 		active = true
@@ -96,7 +97,7 @@ func clearWalk():
 	walked = false
 
 func colorWalk():
-	$Background.self_modulate = Color(0, 0, 1)
+	$Background.self_modulate = Color(1, 1, 1)
 
 func colorAttack():
 	$Background.self_modulate = Color(1, 0, 0)
