@@ -5,8 +5,8 @@ enum Phases{
 	CMBT, CMBT_RSLTN
 }
 
-export (int) var grid_width = 16
-export (int) var grid_height = 16
+export (int) var grid_width = 6
+export (int) var grid_height = 6
 export var offset = 55
 
 var Units
@@ -32,7 +32,7 @@ var head = Vector2(0, 0)
 var nodeArr = []
 var unitArr = []
 
-var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(3, 3), Vector2(4, 4)]
+var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(3, 3), Vector2(5, 5)]
 var unitOwners    = [1, 1, 1, 2] #2 players
 var unitType      = [1, 1, 1, 1]
 var unitHealth    = []
@@ -195,16 +195,24 @@ func resolveCombat():
 	removeDeadUnits()
 		
 func removeDeadUnits():
-	for id in range(len(unitLocations)):
-		if unitHealth[id] <= 0:
-			nodeArr[(unitLocations[id].x - 1) * grid_height + (unitLocations[id].y - 1)].piece = null
-			unitArr[id].queue_free()
-			unitLocations.remove(id)
-			unitOwners.remove(id)
-			unitType.remove(id)
-			unitHealth.remove(id)
-			unitArr.remove(id)
-			break
+	var fullPass = true
+	var offset = 0
+	while(fullPass):
+		fullPass = true
+		for id in range(len(unitLocations)):
+			if unitHealth[id] <= 0:
+				nodeArr[(unitLocations[id].x - 1) * grid_height + (unitLocations[id].y - 1)].piece = null
+				unitArr[id].queue_free()
+				unitLocations.remove(id)
+				unitOwners.remove(id)
+				unitType.remove(id)
+				unitHealth.remove(id)
+				unitArr.remove(id)
+				fullPass = false
+				offset += 1
+				break
+				
+		fullPass = !fullPass
 			
 	unitMovements = {}
 	for id in range(len(unitLocations)):
