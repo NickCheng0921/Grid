@@ -40,7 +40,7 @@ func _on_Tile_input_event(viewport, event, shape_idx):
 
 func walk():
 	if Board.movement > 0:
-		$MoveNumber.text = str(5 - Board.movement)
+		$MoveNumber.text = str(Board.getMaxMovement() + 1 - Board.movement)
 		walked = true
 		Board.movement -= 1
 		colorWalk()
@@ -65,7 +65,7 @@ func select():
 			Board.clearMove(piece)
 			Board.currPiece = piece
 			Board.currPieceLoc = Vector2(x, y)
-			Board.movement = Board.maxMove
+			Board.movement = Board.setMaxMovement()
 			Board.walking = true
 			$Background.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
 		elif piece && Board.phase == Phases.CMBT:

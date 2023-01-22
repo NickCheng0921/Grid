@@ -1,11 +1,12 @@
 extends Node
 
 
-const HP_ARR  = [5, 15]
-const RNG_ARR = [4, 4]
-const MVE_ARR = [4, 4]
-const VIS_ARR = [4, 4]
-const DMG_ARR = [5, 5]
+const HP_ARR  = [10, 5]
+const RNG_ARR = [4, 6]
+const MVE_ARR = [4, 2]
+const VIS_ARR = [4, 2]
+const DMG_ARR = [5, 10]
+const IMG_ARR = ["basic.png", "heavy.png"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -26,7 +27,11 @@ static func getMaxVisionOfUnit(id):
 static func getDamageOfUnit(id):
 	return idSearch(id, DMG_ARR, 5)
 
+static func getImageOfUnit(id):
+	return idSearch(id, IMG_ARR, "basic.png")
+
 static func idSearch(id, arr, default):
+	id = int(id)
 	if id <= len(arr):
 		return arr[id-1]
 	else:

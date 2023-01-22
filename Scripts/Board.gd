@@ -12,9 +12,7 @@ export var offset = 55
 var Units
 var currTile = null
 var Tile = load("res://Scenes/Tile.tscn")
-var pColors = [Color(0, 1, 0), Color(0, 0, 1)]
-export var maxMove = 4
-export var maxRange = 4
+var pColors = [Color(0, .5, 0), Color(0, 0, .5)]
 
 var phase = Phases.MVMT
 var pcamera
@@ -34,7 +32,7 @@ var unitArr = []
 
 var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(3, 3), Vector2(5, 5)]
 var unitOwners    = [1, 1, 1, 2] #2 players
-var unitType      = [1, 1, 1, 1]
+var unitType      = [1, 1, 2, 2]
 var unitHealth    = []
 var unitDirections = [] # 0, 1, 2, 3 -> N, E, S, W
 var unitMovements =  {} #0th element in array is unit 1 here
@@ -75,13 +73,22 @@ func draw_grid():
 			nodeArr.push_back(tile)
 			$Tiles.add_child(tile)
 
+func getMaxMovement():
+	var maxMoveForUnit = Units.getMaxMovementOfUnit(unitType[int(currPiece) - 1])
+	return maxMoveForUnit
+
+func setMaxMovement():
+	var maxMoveForUnit = Units.getMaxMovementOfUnit(unitType[int(currPiece) - 1])
+	movement = maxMoveForUnit
+	return movement
+
 func walk(pos): #check if piece can walk onto specified location
 	var moveDist = abs(pos.x - currPieceLoc.x) + abs(pos.y - currPieceLoc.y)
 	if moveDist > 1:
 		return false
 	for uk in unitMovements.keys():
-		if uk != currPiece && unitMovements[uk].size() >= 5 - movement:
-			if unitMovements[uk][4 - movement] == pos:
+		if uk != currPiece && unitMovements[uk].size() >= getMaxMovement() + 1 - movement:
+			if unitMovements[uk][getMaxMovement() - movement] == pos:
 				return false
 	unitMovements[currPiece].push_back(pos)
 	if unitMovements[currPiece].size() > maxMoveInTurn:
@@ -91,7 +98,8 @@ func walk(pos): #check if piece can walk onto specified location
 
 func attack(pos): #check if piece can call an attack onto specified location
 	var attDist = abs(pos.x - currPieceLoc.x) + abs(pos.y - currPieceLoc.y)
-	if attDist > 3:
+	var range_idx = unitType[int(currPiece) - 1]
+	if attDist > Units.getMaxRangeOfUnit(range_idx):
 		return false
 	unitAttacks[currPiece] = pos
 	return true
@@ -101,7 +109,7 @@ func draw_units():
 	for p in unitLocations:
 		var unit = Sprite.new()
 		unit.modulate = pColors[unitOwners[count-1]-1]
-		unit.texture = load("res://Assets/pointer.png")
+		unit.texture = load("res://Assets/Tanks/" + Units.getImageOfUnit(unitType[count-1]))
 		unit.position = Vector2(offset*(p.x-1), -offset*(p.y-1))
 		nodeArr[(p.x-1) * grid_height + (p.y-1)].piece = str(count)
 		$Units.add_child(unit)
