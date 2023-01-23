@@ -82,14 +82,20 @@ func setMaxMovement():
 	movement = maxMoveForUnit
 	return movement
 
+func getOwner(id):
+	return unitOwners[int(id)-1]
+
 func walk(pos): #check if piece can walk onto specified location
 	var moveDist = abs(pos.x - currPieceLoc.x) + abs(pos.y - currPieceLoc.y)
 	if moveDist > 1:
 		return false
 	for uk in unitMovements.keys():
-		if uk != currPiece && unitMovements[uk].size() >= getMaxMovement() + 1 - movement:
-			if unitMovements[uk][getMaxMovement() - movement] == pos:
-				return false
+		#only check movement w same team, enemy collision resolves during timeout function
+		if getOwner(currPiece) == getOwner(uk):
+			#check if we collide w a move on same team
+			if uk != currPiece && unitMovements[uk].size() >= getMaxMovement() + 1 - movement:
+				if unitMovements[uk][getMaxMovement() - movement] == pos:
+					return false
 	unitMovements[currPiece].push_back(pos)
 	if unitMovements[currPiece].size() > maxMoveInTurn:
 		maxMoveInTurn = unitMovements[currPiece].size()
@@ -230,6 +236,14 @@ func removeDeadUnits():
 		
 func getPosFromVec(v):
 	return Vector2((v.x - 1) * offset, -1 * (v.y - 1) * offset)
+
+func playSound1():
+	$Audio.stream = load("res://Assets/Sounds/sound1.wav")
+	$Audio.play()
+	
+func playSound2():
+	$Audio.stream = load("res://Assets/Sounds/sound2.wav")
+	$Audio.play()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

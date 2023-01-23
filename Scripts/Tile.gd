@@ -28,13 +28,15 @@ func _on_Tile_input_event(viewport, event, shape_idx):
 		if Board.walking:
 			if Board.walk(Vector2(x, y)):
 				walk()
+				Board.playSound1()
 			else:
-				pass #invalid walk selection
+				Board.playSound2() #invalid walk selection
 		elif Board.attacking:
 			if Board.attack(Vector2(x, y)):
 				attack()
+				Board.playSound1()
 			else:
-				pass
+				Board.playSound2()
 		else:
 			select()
 
@@ -79,8 +81,10 @@ func select():
 		active = true
 		Board.currentTile(self)
 		$Background.show()
+		Board.playSound1()
 	else:
 		deselect()
+		Board.playSound2()
 
 func deselect():
 	if walked:
