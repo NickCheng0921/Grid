@@ -9,6 +9,7 @@ var pColors
 var active = false #this piece is selected, starts false
 var walked = false
 var attacked = false
+var fog = false
 var Board = null
 var x = -1
 var y = -1
@@ -24,7 +25,7 @@ func _ready():
 #	pass
 
 func _on_Tile_input_event(viewport, event, shape_idx):
-	if (event is InputEventMouseButton && event.button_index == 1 && event.pressed):
+	if (event is InputEventMouseButton && event.button_index == 1 && event.pressed && !fog):
 		if Board.walking:
 			if Board.walk(Vector2(x, y)):
 				walk()
@@ -110,3 +111,8 @@ func clearAttack():
 	$Background.hide()
 	attacked = false
 	
+func enableFog(val):
+	if val:
+		$Fog.show()
+	else:
+		$Fog.hide()

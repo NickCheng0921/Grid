@@ -3,8 +3,8 @@ extends Node
 
 const HP_ARR  = [10, 5]
 const RNG_ARR = [4, 6]
-const MVE_ARR = [4, 2]
-const VIS_ARR = [4, 2]
+const MVE_ARR = [3, 2]
+const VIS_ARR = [3, 2]
 const DMG_ARR = [5, 10]
 const IMG_ARR = ["basic.png", "heavy.png"]
 

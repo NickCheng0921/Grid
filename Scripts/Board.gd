@@ -10,6 +10,7 @@ export (int) var grid_height = 6
 export var offset = 55
 
 var Units
+var playerFogView = 1
 var currTile = null
 var Tile = load("res://Scenes/Tile.tscn")
 var pColors = [Color(0, .5, 0), Color(0, 0, .5)]
@@ -26,13 +27,14 @@ var walking = false
 var attacking = false
 var movement = 0
 var head = Vector2(0, 0)
+var currFogVal = true
 
 var nodeArr = []
 var unitArr = []
 
-var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(3, 3), Vector2(5, 5)]
-var unitOwners    = [1, 1, 1, 2] #2 players
-var unitType      = [1, 1, 2, 2]
+var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(4, 4), Vector2(5, 5)]
+var unitOwners    = [1, 1, 2, 2] #2 players
+var unitType      = [1, 2, 1, 2]
 var unitHealth    = []
 var unitDirections = [] # 0, 1, 2, 3 -> N, E, S, W
 var unitMovements =  {} #0th element in array is unit 1 here
@@ -174,6 +176,9 @@ func _moveAnimationTimerTimeout():
 		pcamera.updatePhaseText("PHASE: COMBAT")
 		clearBoardAfterMovement()
 		animationTimer.queue_free()
+		#Bug where fog does not properly update unnless cleared
+		updateBoardFog(false)
+		updateBoardFog(true)
 		
 func clearBoardAfterMovement():
 	for i in range(grid_height * grid_width):
@@ -245,6 +250,17 @@ func playSound2():
 	$Audio.stream = load("res://Assets/Sounds/sound2.wav")
 	$Audio.play()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func updateBoardFog(val):
+	for i in range(grid_width):
+		for j in range(grid_height):
+			#if piece is not in a unit view, cover with fog
+			var isSeen = false
+			for u in range(len(unitOwners)):
+				if unitOwners[u] == playerFogView:
+					var sightRange = Units.getMaxVisionOfUnit(unitType[u])
+					if ( abs(i-unitLocations[u].x+1) + abs(j - unitLocations[u].y+1) ) <= sightRange:
+						isSeen = true
+						break
+			if !val || (val && !isSeen):
+				nodeArr[i * grid_width + j].enableFog(val)
+				nodeArr[i * grid_width + j].fog = val

@@ -42,3 +42,27 @@ func _on_endTurnButton_button_up():
 
 func updatePhaseText(val):
 	$CanvasLayer/phaseInfo.text = val
+
+
+func _on_playerSwapButton_button_up():
+	#if fog, we have to update TODO
+	if Board.playerFogView == 1:
+		Board.playerFogView = 2
+		$CanvasLayer/playerInfo.text = "PLAYER: 2"
+	else:
+		Board.playerFogView = 1
+		$CanvasLayer/playerInfo.text = "PLAYER: 1"
+		
+	if Board.currFogVal:
+		Board.updateBoardFog(false)
+		Board.updateBoardFog(Board.currFogVal)
+
+
+func _on_showFogButton_button_up():
+	Board.currFogVal = true
+	Board.updateBoardFog(false)
+	Board.updateBoardFog(Board.currFogVal)
+
+func _on_hideFogButton_button_up():
+	Board.currFogVal = false
+	Board.updateBoardFog(Board.currFogVal)

@@ -17,10 +17,10 @@ shape = SubResource( 1 )
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="phaseInfo" type="RichTextLabel" parent="CanvasLayer"]
-margin_left = 903.0
-margin_top = 551.0
-margin_right = 1027.0
-margin_bottom = 591.0
+margin_left = 894.0
+margin_top = 554.0
+margin_right = 1018.0
+margin_bottom = 594.0
 text = "PHASE: MOVEMENT"
 
 [node name="endTurnButton" type="Button" parent="CanvasLayer"]
@@ -30,4 +30,35 @@ margin_right = 883.0
 margin_bottom = 595.0
 text = "END TURN"
 
+[node name="showFogButton" type="Button" parent="CanvasLayer"]
+margin_left = 600.0
+margin_top = 547.0
+margin_right = 738.0
+margin_bottom = 570.0
+text = "SHOW FOG"
+
+[node name="hideFogButton" type="Button" parent="CanvasLayer"]
+margin_left = 601.0
+margin_top = 573.0
+margin_right = 738.0
+margin_bottom = 593.0
+text = "HIDE FOG"
+
+[node name="playerInfo" type="RichTextLabel" parent="CanvasLayer"]
+margin_left = 891.0
+margin_top = 510.0
+margin_right = 1015.0
+margin_bottom = 541.0
+text = "PLAYER: 1"
+
+[node name="playerSwapButton" type="Button" parent="CanvasLayer"]
+margin_left = 498.0
+margin_top = 546.0
+margin_right = 597.0
+margin_bottom = 594.0
+text = "SWAP PLAYER"
+
 [connection signal="button_up" from="CanvasLayer/endTurnButton" to="." method="_on_endTurnButton_button_up"]
+[connection signal="button_up" from="CanvasLayer/showFogButton" to="." method="_on_showFogButton_button_up"]
+[connection signal="button_up" from="CanvasLayer/hideFogButton" to="." method="_on_hideFogButton_button_up"]
+[connection signal="button_up" from="CanvasLayer/playerSwapButton" to="." method="_on_playerSwapButton_button_up"]
