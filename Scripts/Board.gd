@@ -32,9 +32,9 @@ var currFogVal = true
 var nodeArr = []
 var unitArr = []
 
-var unitLocations = [Vector2(1, 1), Vector2(2, 2), Vector2(4, 4), Vector2(5, 5)]
+var unitLocations = [Vector2(2, 2), Vector2(2, 4), Vector2(4, 4), Vector2(5, 5)]
 var unitOwners    = [1, 1, 2, 2] #2 players
-var unitType      = [1, 2, 1, 2]
+var unitType      = [2, 1, 1, 2]
 var unitHealth    = []
 var unitDirections = [] # 0, 1, 2, 3 -> N, E, S, W
 var unitMovements =  {} #0th element in array is unit 1 here
@@ -148,7 +148,32 @@ func endTurn():
 		
 func _moveAnimationTimerTimeout():
 	var unitCtr = 1
+	#simulate movement to prevent collisions
+	var nextMoveLocations = {}
+	for u in unitLocations:
+		var moves = unitMovements[str(unitCtr)]
+		for idx in range(moves.size()):
+			var currPos = unitLocations[unitCtr-1]
+			if idx == currMoveInTurn-1:
+				var m = moves[idx]
+				#move piece
+				nextMoveLocations[unitCtr-1] = m #set active location to m
+		unitCtr += 1
+			
+	#check unit collision using double for loop
+	for nk in nextMoveLocations.keys():
+		for otherKey in nextMoveLocations.keys():
+			if (otherKey != nk) && (nextMoveLocations[nk] == nextMoveLocations[otherKey]):
+				#clear grid of moves for all collided pieces
+				for m in unitMovements[str(otherKey+1)]:
+					nodeArr[(m.x - 1) * grid_height + (m.y - 1)].clearWalk()
+				for m in unitMovements[str(nk+1)]:
+					nodeArr[(m.x - 1) * grid_height + (m.y - 1)].clearWalk()
+				unitMovements[str(otherKey+1)] = []
+				unitMovements[str(nk+1)] = []
+
 	#advance all pieces sequentially (everyone moves 1 step forward)
+	unitCtr = 1
 	for u in unitLocations:
 		var moves = unitMovements[str(unitCtr)]
 		for idx in range(moves.size()):
