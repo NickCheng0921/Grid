@@ -116,3 +116,6 @@ func enableFog(val):
 		$Fog.show()
 	else:
 		$Fog.hide()
+
+func showTerrain():
+	$Terrain.show()

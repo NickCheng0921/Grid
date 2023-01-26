@@ -6,14 +6,16 @@ enum Phases{
 }
 
 const degreesOfFreedom = 1
-export (int) var grid_width = 8
-export (int) var grid_height = 8
+export (int) var grid_width = 16
+export (int) var grid_height = 16
 export var offset = 55
 const dirUnitVecs = [Vector2(0, 1), Vector2(1, 0), Vector2(0, -1), Vector2(-1, 0)]
 
 var Units
 var playerFogView = 1
 var currTile = null
+var Map
+var terrainArr
 var Tile = load("res://Scenes/Tile.tscn")
 var pColors = [Color(0, .5, 0), Color(0, 0, .5)]
 
@@ -34,9 +36,9 @@ var currFogVal = true
 var nodeArr = []
 var unitArr = []
 
-var unitLocations = [Vector2(2, 2), Vector2(2, 4), Vector2(4, 4), Vector2(5, 5)]
-var unitOwners    = [1, 1, 2, 2] #2 players
-var unitType      = [2, 1, 1, 2]
+var unitLocations = [] #[Vector2(2, 2), Vector2(2, 4), Vector2(4, 4), Vector2(5, 5)]
+var unitOwners    = [] #[1, 1, 2, 2] #2 players
+var unitType      = [] #[2, 1, 1, 2]
 var unitHealth    = []
 var unitDirections = [] # 0, 1, 2, 3 -> N, E, S, W
 var unitMovements =  {} #0th element in array is unit 1 here
@@ -46,7 +48,12 @@ var unitAttacks   =  {} #same layout as movements, key: id, val: Vec2 pos
 func _ready():
 	Units = load("res://Scripts/Units.gd")
 	basicTimerScript = load("res://Scripts/BasicTimer.gd")
+	Map = load("res://Scripts/Maps.gd")
 	draw_grid()
+	draw_terrain()
+	setupMatch()
+
+func setupMatch():
 	draw_units()
 	for p in range(len(unitLocations)):
 		unitMovements[str(p+1)] = []
@@ -91,7 +98,7 @@ func getOwner(id):
 
 func walk(pos): #check if piece can walk onto specified location
 	var moveDist = abs(pos.x - currPieceLoc.x) + abs(pos.y - currPieceLoc.y)
-	if moveDist > 1:
+	if moveDist > 1 || (pos in terrainArr):
 		return false
 	for uk in unitMovements.keys():
 		#only check movement w same team, enemy collision resolves during timeout function
@@ -114,6 +121,11 @@ func attack(pos): #check if piece can call an attack onto specified location
 	unitAttacks[currPiece] = pos
 	return true
 
+func draw_terrain():
+	terrainArr = Map.getTerrain()
+	for t in terrainArr:
+		nodeArr[(t.x-1) * grid_height + (t.y-1)].showTerrain()
+	
 func draw_units():
 	var count = 1
 	for p in unitLocations:
