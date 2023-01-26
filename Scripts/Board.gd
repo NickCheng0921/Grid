@@ -5,9 +5,11 @@ enum Phases{
 	CMBT, CMBT_RSLTN
 }
 
-export (int) var grid_width = 6
-export (int) var grid_height = 6
+const degreesOfFreedom = 1
+export (int) var grid_width = 8
+export (int) var grid_height = 8
 export var offset = 55
+const dirUnitVecs = [Vector2(0, 1), Vector2(1, 0), Vector2(0, -1), Vector2(-1, 0)]
 
 var Units
 var playerFogView = 1
@@ -227,16 +229,45 @@ func updatePieceRotation(counter, currPos, newPos):
 			unitDirections[counter-1] = 2
 		
 func resolveCombat():
-	for id in unitAttacks.keys():
-		var targetLocation = unitAttacks[id]
-		if targetLocation:
-			if targetLocation in unitLocations:
-				var hitID = unitLocations.find(targetLocation)
-				var damageAmount = Units.getDamageOfUnit(hitID)
-				unitHealth[hitID] -= damageAmount
-			nodeArr[(targetLocation.x - 1) * grid_height + (targetLocation.y - 1)].clearAttack()
+	var combatPrio = assignCombatPriorities()
+	var sortedCombatKeys = combatPrio.keys()
+	sortedCombatKeys.sort()
+	
+	for attacks in sortedCombatKeys:
+		var attacksThisTurn = combatPrio[attacks]
+		for id in attacksThisTurn:
+			var targetLocation = unitAttacks[id]
+			if targetLocation:
+				if targetLocation in unitLocations:
+					var hitID = unitLocations.find(targetLocation)
+					var damageAmount = Units.getDamageOfUnit(unitType[int(id)-1])
+					unitHealth[hitID] -= damageAmount
+				unitAttacks[id] = null
+		for id in unitAttacks:
+			if unitHealth[int(id)-1] <= 0:
+				unitAttacks[id] = null
+	for i in range(grid_width):
+		for j in range(grid_height):
+			nodeArr[i * grid_height + j].clearAttack()
 	unitAttacks = {}
 	removeDeadUnits()
+		
+func assignCombatPriorities():
+	var priorityD = {}
+	for id in unitAttacks.keys():
+		var attackAngle = calculateAngle(unitLocations[int(id)-1], unitDirections[int(id)-1], unitAttacks[id])
+		if attackAngle in priorityD:
+			priorityD[attackAngle].push_back(id)
+		else:
+			priorityD[attackAngle] = [id]
+	return priorityD
+	
+#pos1 and dir are attributes of first tank, pos2 is attacking location
+func calculateAngle(pos1, dir, pos2):
+	var vec1 = dirUnitVecs[dir]
+	var vec2 = (pos2 - pos1).normalized()
+	var angle = int(pow(10, degreesOfFreedom) * acos(vec1.dot(vec2))*180/PI)
+	return angle
 		
 func removeDeadUnits():
 	var fullPass = true
