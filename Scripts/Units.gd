@@ -7,6 +7,7 @@ const MVE_ARR = [4, 2]
 const VIS_ARR = [4, 2]
 const DMG_ARR = [5, 10]
 const IMG_ARR = ["basic.png", "heavy.png"]
+const NAME_ARR = ["BASIC", "ARTILLERY"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

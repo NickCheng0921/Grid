@@ -1,25 +1,27 @@
 extends Node2D
 
 enum Phases{
+	SELECT,
 	MVMT, MVMT_RSLTN,
 	CMBT, CMBT_RSLTN
 }
 
 const degreesOfFreedom = 1
-export (int) var grid_width = 16
-export (int) var grid_height = 16
+export (int) var grid_width = 8
+export (int) var grid_height = 8
 export var offset = 55
 const dirUnitVecs = [Vector2(0, 1), Vector2(1, 0), Vector2(0, -1), Vector2(-1, 0)]
 
 var Units
-var playerFogView = 1
+var currPlayer = 1
+var selectedSpawnPos = null
 var currTile = null
 var Map
 var terrainArr
 var Tile = load("res://Scenes/Tile.tscn")
 var pColors = [Color(0, .5, 0), Color(0, 0, .5)]
 
-var phase = Phases.MVMT
+var phase = Phases.SELECT
 var pcamera
 var basicTimerScript
 var animationTimer
@@ -31,7 +33,7 @@ var walking = false
 var attacking = false
 var movement = 0
 var head = Vector2(0, 0)
-var currFogVal = true
+var currFogVal = false
 
 var nodeArr = []
 var unitArr = []
@@ -51,10 +53,9 @@ func _ready():
 	Map = load("res://Scripts/Maps.gd")
 	draw_grid()
 	draw_terrain()
-	setupMatch()
-
+	drawSpawns()
+	
 func setupMatch():
-	draw_units()
 	for p in range(len(unitLocations)):
 		unitMovements[str(p+1)] = []
 		unitDirections.push_back(0)
@@ -81,8 +82,55 @@ func draw_grid():
 			tile.name = str(i*grid_height + j)
 			tile.Board = self
 			tile.position = Vector2(offset*i, -offset*j)
+			tile.pcamera = pcamera
 			nodeArr.push_back(tile)
 			$Tiles.add_child(tile)
+
+func setUnitSpawn(pos):
+	selectedSpawnPos = pos
+
+func getSpawn():
+	if currPlayer == 1:
+		return Map.p1Spawn
+	elif currPlayer == 2:
+		return Map.p2Spawn
+	else:
+		return []
+
+func spawnUnit(id):
+	clear_units()
+	if selectedSpawnPos in unitLocations:
+		var removeIndex = unitLocations.find(selectedSpawnPos)
+		unitLocations.remove(removeIndex)
+		unitOwners.remove(removeIndex)
+		unitType.remove(removeIndex)
+
+	unitLocations.push_back(selectedSpawnPos)
+	unitOwners.push_back(currPlayer)
+	unitType.push_back(id)
+	draw_units()
+
+func drawSpawns():
+	var p1Spawn = Map.getP1Spawn()
+	var p2Spawn = Map.getP2Spawn()
+	for p in p1Spawn:
+		nodeArr[(p.x - 1) * grid_height + (p.y - 1)].colorTile(pColors[0])
+	for p in p2Spawn:
+		nodeArr[(p.x - 1) * grid_height + (p.y - 1)].colorTile(pColors[1])
+
+func hideSpawnMarkers():
+	var p1Spawn = Map.getP1Spawn()
+	var p2Spawn = Map.getP2Spawn()
+	for p in p1Spawn:
+		nodeArr[(p.x - 1) * grid_height + (p.y - 1)].uncolorTile()
+	for p in p2Spawn:
+		nodeArr[(p.x - 1) * grid_height + (p.y - 1)].uncolorTile()
+
+func selectedUnit(id):
+	pass
+
+func playerSelectedUnit(id):
+	pass
 
 func getMaxMovement():
 	var maxMoveForUnit = Units.getMaxMovementOfUnit(unitType[int(currPiece) - 1])
@@ -107,6 +155,7 @@ func walk(pos): #check if piece can walk onto specified location
 			if uk != currPiece && unitMovements[uk].size() >= getMaxMovement() + 1 - movement:
 				if unitMovements[uk][getMaxMovement() - movement] == pos:
 					return false
+					
 	unitMovements[currPiece].push_back(pos)
 	if unitMovements[currPiece].size() > maxMoveInTurn:
 		maxMoveInTurn = unitMovements[currPiece].size()
@@ -139,7 +188,9 @@ func draw_units():
 		count += 1
 		
 func clear_units():
-	pass
+	for c in $Units.get_children():
+		c.free()
+	unitArr = []
 		
 func deselectCurrPiece():
 	var currPos = unitLocations[int(currPiece)-1]
@@ -159,6 +210,13 @@ func endTurn():
 		resolveCombat()
 		phase = Phases.MVMT
 		pcamera.updatePhaseText("PHASE: MOVEMENT")
+	elif phase == Phases.SELECT:
+		phase = Phases.MVMT
+		pcamera.updatePhaseText("PHASE: MOVEMENT")
+		pcamera.hideSelectUnitInfo()
+		pcamera.showInGameInfo()
+		hideSpawnMarkers()
+		setupMatch()
 		
 func _moveAnimationTimerTimeout():
 	var unitCtr = 1
@@ -324,7 +382,7 @@ func updateBoardFog(val):
 			#if piece is not in a unit view, cover with fog
 			var isSeen = false
 			for u in range(len(unitOwners)):
-				if unitOwners[u] == playerFogView:
+				if unitOwners[u] == currPlayer:
 					var sightRange = Units.getMaxVisionOfUnit(unitType[u])
 					if ( abs(i-unitLocations[u].x+1) + abs(j - unitLocations[u].y+1) ) <= sightRange:
 						isSeen = true

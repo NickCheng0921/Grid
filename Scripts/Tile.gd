@@ -1,6 +1,7 @@
 extends Area2D
 
 enum Phases{
+	SELECT,
 	MVMT, MVMT_RSLTN,
 	CMBT, CMBT_RSLTN
 }
@@ -11,6 +12,7 @@ var walked = false
 var attacked = false
 var fog = false
 var Board = null
+var pcamera = null
 var x = -1
 var y = -1
 
@@ -20,13 +22,16 @@ var piece = null
 func _ready():
 	$MoveNumber.add_color_override("font_color", Color(1, 0, 0, 0))
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
-
 func _on_Tile_input_event(viewport, event, shape_idx):
 	if (event is InputEventMouseButton && event.button_index == 1 && event.pressed && !fog):
-		if Board.walking:
+		if Board.phase == Phases.SELECT:
+			if posInPlayerSpawn():
+				Board.playSound1()
+				pcamera.showSelectUnitInfo()
+				Board.setUnitSpawn(Vector2(x, y))
+			else:
+				return false
+		elif Board.walking:
 			if Board.walk(Vector2(x, y)):
 				walk()
 				Board.playSound1()
@@ -40,6 +45,13 @@ func _on_Tile_input_event(viewport, event, shape_idx):
 				Board.playSound2()
 		else:
 			select()
+
+func posInPlayerSpawn():
+	var playerSpawn = Board.getSpawn()
+	if Vector2(x, y) in playerSpawn:
+		return true
+	else:
+		false
 
 func walk():
 	if Board.movement > 0:
@@ -103,6 +115,14 @@ func clearWalk():
 
 func colorWalk():
 	$Background.self_modulate = Color(1, 1, 1)
+
+func colorTile(col):
+	$Background.self_modulate = col
+	$Background.show()
+
+func uncolorTile():
+	$Background.self_modulate = Color(1, 1, 1)
+	$Background.hide()
 
 func colorAttack():
 	$Background.self_modulate = Color(1, 0, 0)
