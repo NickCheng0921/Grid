@@ -65,6 +65,10 @@ text = "HIDE FOG"
 visible = false
 position = Vector2( 53, 536 )
 
+[node name="attackInfo" type="Node2D" parent="CanvasLayer"]
+visible = false
+position = Vector2( 53, 536 )
+
 [connection signal="button_up" from="CanvasLayer/endTurnButton" to="." method="_on_endTurnButton_button_up"]
 [connection signal="button_up" from="CanvasLayer/playerSwapButton" to="." method="_on_playerSwapButton_button_up"]
 [connection signal="button_up" from="CanvasLayer/inGameInfo/showFogButton" to="." method="_on_showFogButton_button_up"]

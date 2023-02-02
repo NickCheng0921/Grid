@@ -1,17 +1,18 @@
 extends Node
 
 
-const HP_ARR  = [10, 5]
-const RNG_ARR = [4, 6]
-const MVE_ARR = [4, 2]
-const VIS_ARR = [4, 2]
-const DMG_ARR = [5, 10]
-const IMG_ARR = ["basic.png", "heavy.png"]
-const NAME_ARR = ["BASIC", "ARTILLERY"]
+const HP_ARR  = [5, 5, 5, 5, 5]
+const RNG_ARR = [1, 1, 1, 1, 1]
+const MVE_ARR = [2, 2, 2, 2, 2]
+const VIS_ARR = [4, 4, 4, 4, 4]
+const DMG_ARR = [5, 5, 5, 5, 5]
+const IMG_ARR = ["elektro.png", "wally.png", "badgundam.png", "howls.png", "roadster.png"]
+const NAME_ARR = ["ELEKTRO", "WALLY", "BUNDAM", "HOWL", "RDSTR"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	#set functions into array
+	pass
 
 static func getMaxHealthOfUnit(id):
 	return idSearch(id, HP_ARR, 10)
@@ -31,9 +32,29 @@ static func getDamageOfUnit(id):
 static func getImageOfUnit(id):
 	return idSearch(id, IMG_ARR, "basic.png")
 
+static func getNameOfUnit(id):
+	return idSearch(id, NAME_ARR, "?")
+
 static func idSearch(id, arr, default):
 	id = int(id)
 	if id <= len(arr):
 		return arr[id-1]
 	else:
 		return default
+
+static func getAbilities(id):
+	id = int(id)
+	
+	var ability_dict = {
+		1 : [],
+		2 : ["attack_trashmaker"],
+		3 : [],
+		4 : [],
+		5 : []
+	}
+	
+	if !(id in ability_dict):
+		print("Abilities not found for unit ", id)
+		return []
+	else:
+		return ability_dict[id]

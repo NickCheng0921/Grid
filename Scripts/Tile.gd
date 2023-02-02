@@ -13,6 +13,7 @@ var attacked = false
 var fog = false
 var Board = null
 var pcamera = null
+var Units
 var x = -1
 var y = -1
 
@@ -21,6 +22,7 @@ var piece = null
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$MoveNumber.add_color_override("font_color", Color(1, 0, 0, 0))
+	Units = load("res://Scripts/Units.gd")
 
 func _on_Tile_input_event(viewport, event, shape_idx):
 	if (event is InputEventMouseButton && event.button_index == 1 && event.pressed && !fog):
@@ -82,18 +84,20 @@ func select():
 			Board.currPieceLoc = Vector2(x, y)
 			Board.movement = Board.setMaxMovement()
 			Board.walking = true
-			$Background.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
+			$Glow.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
 		elif piece && Board.phase == Phases.CMBT:
+			var unitId = Board.unitType[int(piece)-1]
+			print("Possible attacks for unit ", Units.getNameOfUnit(unitId), " are ", Units.getAbilities(unitId))
 			Board.clearMove(piece)
 			Board.currPiece = piece
 			Board.currPieceLoc = Vector2(x, y)
 			Board.attacking = true
-			$Background.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
+			$Glow.self_modulate = pColors[Board.unitOwners[int(piece) - 1] - 1]
 		else:
-			$Background.self_modulate = Color(1, 1, 1)
+			$Glow.self_modulate = Color(1, 1, 1)
 		active = true
 		Board.currentTile(self)
-		$Background.show()
+		$Glow.show()
 		Board.playSound1()
 	else:
 		deselect()
@@ -104,8 +108,7 @@ func deselect():
 		colorWalk()
 	elif attacked:
 		colorAttack()
-	else:
-		$Background.hide()
+	$Glow.hide()
 	active = false
 
 func clearWalk():

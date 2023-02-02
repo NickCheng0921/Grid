@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/white_circle_fade.png-d6e828efc43469a622aa6023daaf6576.stex"
+path="res://.import/wally.png-c20f41061536da658a722400d4a13ebc.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Tiles/white_circle_fade.png"
-dest_files=[ "res://.import/white_circle_fade.png-d6e828efc43469a622aa6023daaf6576.stex" ]
+source_file="res://Assets/Tanks/wally.png"
+dest_files=[ "res://.import/wally.png-c20f41061536da658a722400d4a13ebc.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

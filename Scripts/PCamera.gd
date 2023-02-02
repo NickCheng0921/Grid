@@ -56,8 +56,16 @@ func setupUnitSelection():
 		img.position.x = i*offset + offset/2
 		img.position.y += offset/2
 		
+		var nameLabel = RichTextLabel.new()
+		nameLabel.margin_left = i*offset
+		nameLabel.margin_top = -15
+		nameLabel.margin_right = i*offset + 100
+		nameLabel.margin_bottom = 15
+		nameLabel.text = Units.NAME_ARR[i]
+		
 		$CanvasLayer/selectInfo.add_child(button)
 		$CanvasLayer/selectInfo.add_child(img)
+		$CanvasLayer/selectInfo.add_child(nameLabel)
 
 func showSelectUnitInfo():
 	$CanvasLayer/selectInfo.show()
@@ -89,7 +97,7 @@ func _on_playerSwapButton_button_up():
 		
 	if Board.currFogVal:
 		Board.updateBoardFog(false)
-		Board.updateBoardFog(Board.currFogVal)
+		Board.updateBoardFog(Board.currPlayer)
 
 func _on_showFogButton_button_up():
 	Board.currFogVal = true

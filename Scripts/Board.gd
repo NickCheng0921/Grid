@@ -19,7 +19,7 @@ var currTile = null
 var Map
 var terrainArr
 var Tile = load("res://Scenes/Tile.tscn")
-var pColors = [Color(0, .5, 0), Color(0, 0, .5)]
+var pColors = [Color(.5, 1, .5), Color(.5, .5, 1)]
 
 var phase = Phases.SELECT
 var pcamera
@@ -211,8 +211,8 @@ func endTurn():
 		phase = Phases.MVMT
 		pcamera.updatePhaseText("PHASE: MOVEMENT")
 	elif phase == Phases.SELECT:
-		phase = Phases.MVMT
-		pcamera.updatePhaseText("PHASE: MOVEMENT")
+		phase = Phases.CMBT
+		pcamera.updatePhaseText("PHASE: COMBAT")
 		pcamera.hideSelectUnitInfo()
 		pcamera.showInGameInfo()
 		hideSpawnMarkers()
